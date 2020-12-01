@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/caffeines/sharehub/app"
 	"github.com/caffeines/sharehub/config"
+	"github.com/caffeines/sharehub/lib"
 	"github.com/caffeines/sharehub/server"
 )
 
@@ -15,6 +16,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	lib.InitValidator()
 }
 
 func main() {
