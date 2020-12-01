@@ -41,10 +41,19 @@ func DisconnectMongo() error {
 	return nil
 }
 
-// GetMongoClient returns created mongo instance or error if not connected
+// GetMongoClient returns created mongo client or error if not connected
 func GetMongoClient() (*mongo.Client, error) {
 	if instance == nil {
 		return nil, errors.New("Database not connected")
 	}
 	return instance, nil
+}
+
+// GetDB returns database instance
+func GetDB() (*mongo.Database, error) {
+	client, err := GetMongoClient()
+	if err != nil {
+		return nil, err
+	}
+	return client.Database(config.DB().Name), nil
 }

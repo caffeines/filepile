@@ -31,7 +31,8 @@ func StartServer() {
 	}()
 	<-stop
 
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
 	if err := httpServer.Shutdown(ctx); err != nil {
 		log.Println("Http server couldn't shutdown gracefully")
 	}
