@@ -34,10 +34,11 @@ func ConnectMongo() error {
 // DisconnectMongo disconnects with MongoDB
 func DisconnectMongo() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 	if err := instance.Disconnect(ctx); err != nil {
 		return err
 	}
-	defer cancel()
+	return nil
 }
 
 // GetMongoClient returns created mongo instance or error if not connected

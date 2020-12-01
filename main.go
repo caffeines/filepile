@@ -5,6 +5,7 @@ import (
 
 	"github.com/caffeines/sharehub/app"
 	"github.com/caffeines/sharehub/config"
+	"github.com/caffeines/sharehub/server"
 )
 
 func init() {
@@ -20,6 +21,7 @@ func init() {
 
 func main() {
 	fmt.Println("Hello Sharehub")
+	server.StartServer()
 	defer func() {
 		err := app.DisconnectMongo()
 		if err != nil {
