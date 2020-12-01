@@ -14,7 +14,7 @@ func RegisterAuthRoutes(endpoint *echo.Group) {
 	endpoint.POST("/", register)
 }
 func register(ctx echo.Context) error {
-	_, err := validators.ValidateRegister(ctx)
+	user, err := validators.ValidateRegister(ctx)
 	resp := lib.Response{}
 	if err != nil {
 		log.Println(err)
@@ -24,5 +24,9 @@ func register(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
-	return nil
+
+	resp.Title = "User registration successful"
+	resp.Status = http.StatusAccepted
+	resp.Data = user
+	return resp.ServerJSON(ctx)
 }

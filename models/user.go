@@ -8,11 +8,11 @@ import (
 
 // User model holds the user's data
 type User struct {
-	ID               primitive.ObjectID `bson:"_id,omitempty"`
-	Name             string             `bson:"name,omitempty"`
-	Username         string             `bson:"username,omitempty"`
-	Email            string             `bson:"email,omitempty"`
-	Password         string             `bson:"password,omitempty"`
+	ID               primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Name             string             `bson:"name,omitempty" json:"name"`
+	Username         string             `bson:"username,omitempty" json:"username"`
+	Email            string             `bson:"email,omitempty" json:"email"`
+	Password         string             `bson:"password,omitempty" json:"-"`
 	ProfilePic       string             `bson:"profilePic,omitempty"`
 	VerificationCode string             `bson:"verificationCode,omitempty"`
 	CodeGenTime      time.Time          `bson:"codeGenTime,omitempty"`
