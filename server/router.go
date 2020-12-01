@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/caffeines/sharehub/api"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -41,18 +42,6 @@ func GetRouter() http.Handler {
 
 func registerV1Routes() {
 	v1 := router.Group("/v1")
-	v1.GET("/", hello)
-	v1.GET("/hello/", hello2)
-	v1.GET("/hello/:id/", hello3)
-}
-
-func hello(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, map[string]string{"messsage": "hello"})
-}
-func hello2(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, map[string]string{"messsage": "hello2"})
-}
-func hello3(ctx echo.Context) error {
-	id := ctx.Param("id")
-	return ctx.JSON(http.StatusOK, map[string]string{"messsage": id})
+	auth := v1.Group("/auth")
+	api.RegisterAuthRoutes(auth)
 }

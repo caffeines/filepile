@@ -12,6 +12,7 @@ type User struct {
 	Name             string             `bson:"name,omitempty"`
 	Username         string             `bson:"username,omitempty"`
 	Email            string             `bson:"email,omitempty"`
+	Password         string             `bson:"password,omitempty"`
 	ProfilePic       string             `bson:"profilePic,omitempty"`
 	VerificationCode string             `bson:"verificationCode,omitempty"`
 	CodeGenTime      time.Time          `bson:"codeGenTime,omitempty"`

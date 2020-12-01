@@ -4,6 +4,9 @@ go 1.15
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-playground/locales v0.13.0
+	github.com/go-playground/universal-translator v0.17.0
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
@@ -17,7 +20,7 @@ require (
 	go.mongodb.org/mongo-driver v1.4.3
 	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392 // indirect
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
-	golang.org/x/sys v0.0.0-20201130171929-760e229fe7c5 // indirect
+	golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

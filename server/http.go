@@ -12,7 +12,7 @@ import (
 
 // StartServer starts the http server
 func StartServer() {
-	addr := fmt.Sprintf("%s:%d", "localhost", 1232)
+	addr := fmt.Sprintf("%s:%d", "localhost", 4521)
 
 	stop := make(chan os.Signal)
 	signal.Notify(stop, os.Interrupt)
