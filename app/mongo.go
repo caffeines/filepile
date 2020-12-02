@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/caffeines/sharehub/config"
@@ -50,10 +51,10 @@ func GetMongoClient() (*mongo.Client, error) {
 }
 
 // GetDB returns database instance
-func GetDB() (*mongo.Database, error) {
+func GetDB() *mongo.Database {
 	client, err := GetMongoClient()
 	if err != nil {
-		return nil, err
+		log.Panicln(err)
 	}
-	return client.Database(config.DB().Name), nil
+	return client.Database(config.DB().Name)
 }

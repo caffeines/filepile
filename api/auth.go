@@ -4,7 +4,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/caffeines/sharehub/app"
 	"github.com/caffeines/sharehub/constants/errors"
+	"github.com/caffeines/sharehub/data"
 	"github.com/caffeines/sharehub/lib"
 	"github.com/caffeines/sharehub/validators"
 	"github.com/labstack/echo/v4"
@@ -24,9 +26,21 @@ func register(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
+	userRepo := data.NewUserRepo()
+	db := app.GetDB()
+	_, err = userRepo.Register(db, user)
 
+	if err != nil {
+		log.Println(err)
+		resp.Title = "User registration failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
 	resp.Title = "User registration successful"
 	resp.Status = http.StatusAccepted
 	resp.Data = user
+
 	return resp.ServerJSON(ctx)
 }

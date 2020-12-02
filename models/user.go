@@ -13,11 +13,11 @@ type User struct {
 	Username         string             `bson:"username,omitempty" json:"username"`
 	Email            string             `bson:"email,omitempty" json:"email"`
 	Password         string             `bson:"password,omitempty" json:"-"`
-	ProfilePic       string             `bson:"profilePic,omitempty"`
-	VerificationCode string             `bson:"verificationCode,omitempty"`
-	CodeGenTime      time.Time          `bson:"codeGenTime,omitempty"`
-	CreatedAt        time.Time          `bson:"createdAt,omitempty"`
-	UpdateAt         time.Time          `bson:"updatedAt,omitempty"`
+	ProfilePic       string             `bson:"profilePic,omitempty" json:"profilePic,omitempty"`
+	VerificationCode string             `bson:"verificationCode,omitempty" json:"-"`
+	CodeGenTime      time.Time          `bson:"codeGenTime,omitempty" json:"-"`
+	CreatedAt        time.Time          `bson:"createdAt,omitempty" json:"createdAt"`
+	UpdateAt         time.Time          `bson:"updatedAt,omitempty" json:"updatedAt"`
 }
 
 // CollectionName returns name of the models
