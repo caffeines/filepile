@@ -17,6 +17,7 @@ func RegisterAuthRoutes(endpoint *echo.Group) {
 }
 func register(ctx echo.Context) error {
 	user, err := validators.ValidateRegister(ctx)
+	// TODO: hash password
 	resp := lib.Response{}
 	if err != nil {
 		log.Println(err)
