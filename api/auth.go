@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// RegisterAuthRoutes registers authintacation routes
 func RegisterAuthRoutes(endpoint *echo.Group) {
 	endpoint.POST("/", register)
 }
