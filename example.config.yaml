@@ -1,0 +1,9 @@
+database:
+  URL: 'mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=rs'
+  name: 'filepile'
+
+server:
+  host: 'localhost'
+  name: 'filepile'
+  port: 4521
+  bcrypt_cost: 12

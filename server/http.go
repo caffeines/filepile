@@ -8,11 +8,14 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/caffeines/filepile/config"
 )
 
 // StartServer starts the http server
 func StartServer() {
-	addr := fmt.Sprintf("%s:%d", "localhost", 4521)
+	serverCfg := config.GetServer()
+	addr := fmt.Sprintf("%s:%d", serverCfg.Host, serverCfg.Port)
 
 	stop := make(chan os.Signal)
 	signal.Notify(stop, os.Interrupt)

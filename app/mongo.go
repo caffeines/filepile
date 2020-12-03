@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -28,7 +27,7 @@ func ConnectMongo() error {
 	if err := instance.Ping(ctx, readpref.Primary()); err != nil {
 		return err
 	}
-	fmt.Println("\nSuccessfully connected to MongoDB")
+	log.Println("Successfully connected to MongoDB")
 	return nil
 }
 
