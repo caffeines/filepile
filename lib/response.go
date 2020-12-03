@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"github.com/caffeines/sharehub/constants/errors"
+	"github.com/caffeines/filepile/constants/errors"
 	"github.com/labstack/echo/v4"
 )
 

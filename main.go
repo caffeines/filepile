@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/caffeines/sharehub/app"
-	"github.com/caffeines/sharehub/config"
-	"github.com/caffeines/sharehub/lib"
-	"github.com/caffeines/sharehub/server"
+	"github.com/caffeines/filepile/app"
+	"github.com/caffeines/filepile/config"
+	"github.com/caffeines/filepile/lib"
+	"github.com/caffeines/filepile/server"
 )
 
 func init() {

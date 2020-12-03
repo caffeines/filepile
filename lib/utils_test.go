@@ -3,7 +3,7 @@ package lib_test
 import (
 	"testing"
 
-	"github.com/caffeines/sharehub/lib"
+	"github.com/caffeines/filepile/lib"
 )
 
 func TestHashPassword(t *testing.T) {

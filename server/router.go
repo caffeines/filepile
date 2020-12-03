@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/caffeines/sharehub/api"
+	"github.com/caffeines/filepile/api"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )

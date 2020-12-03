@@ -3,8 +3,8 @@ package validators
 import (
 	"time"
 
-	"github.com/caffeines/sharehub/lib"
-	"github.com/caffeines/sharehub/models"
+	"github.com/caffeines/filepile/lib"
+	"github.com/caffeines/filepile/models"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
