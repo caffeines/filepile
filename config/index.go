@@ -22,5 +22,6 @@ func LoadConfig() error {
 
 	LoadDB()
 	LoadServer()
+	LoadJWT()
 	return nil
 }

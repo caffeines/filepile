@@ -9,4 +9,5 @@ const (
 	UserNotFound           ErrorCode = "404001"
 	DatabaseQueryFailed    ErrorCode = "500001"
 	BcryptProccessFaild    ErrorCode = "500002"
+	UserLoginFailed        ErrorCode = "500003"
 )

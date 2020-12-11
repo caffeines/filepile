@@ -3,6 +3,7 @@ package api
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/caffeines/filepile/app"
 	"github.com/caffeines/filepile/constants/errors"
@@ -11,6 +12,8 @@ import (
 	"github.com/caffeines/filepile/validators"
 	"github.com/labstack/echo/v4"
 )
+
+const SCOPE string = "user"
 
 // RegisterAuthRoutes registers authintacation routes
 func RegisterAuthRoutes(endpoint *echo.Group) {
@@ -54,8 +57,25 @@ func login(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
+	signedToken, err := lib.BuildJWTToken(user.Username, SCOPE, user.ID.Hex())
+	if err != nil {
+		log.Println(err)
 
-	return nil
+		resp.Title = "Failed to sign auth token"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.UserLoginFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+	result := map[string]interface{}{
+		"access_token":  signedToken,
+		"refresh_token": lib.NewRefresToken(),
+		"expire_on":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"permission":    SCOPE,
+	}
+	resp.Status = http.StatusOK
+	resp.Data = result
+	return resp.ServerJSON(ctx)
 }
 
 func register(ctx echo.Context) error {
