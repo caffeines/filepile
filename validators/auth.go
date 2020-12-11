@@ -34,3 +34,21 @@ func ValidateRegister(ctx echo.Context) (*models.User, error) {
 	}
 	return user, nil
 }
+
+// ReqLogin holds login request data
+type ReqLogin struct {
+	Email    string `json:"email,omitempty" validate:"required,email"`
+	Password string `json:"password,omitempty" validate:"required,min=6,max=26"`
+}
+
+// ValidateLogin returns request body or error
+func ValidateLogin(ctx echo.Context) (*ReqLogin, error) {
+	body := ReqLogin{}
+	if err := ctx.Bind(&body); err != nil {
+		return nil, err
+	}
+	if err := lib.GetValidationError(body); err != nil {
+		return nil, err
+	}
+	return &body, nil
+}
