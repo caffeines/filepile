@@ -200,6 +200,22 @@ func logout(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 	log.Println(token)
+	db := app.GetDB()
+	sessionRepo := data.NewSessionRepo()
+	if err := sessionRepo.Logout(db, token); err != nil {
+		if err == mongo.ErrNoDocuments {
+			resp.Title = "No session found"
+			resp.Status = http.StatusNotFound
+			resp.Code = errors.RefreshTokenNotFound
+			resp.Errors = lib.NewError(err.Error())
+			return resp.ServerJSON(ctx)
+		}
+		resp.Title = "Logout failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
 	resp.Status = http.StatusOK
 	resp.Title = "Logout successful"
 	return resp.ServerJSON(ctx)
