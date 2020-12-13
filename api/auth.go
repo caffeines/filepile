@@ -10,6 +10,7 @@ import (
 	"github.com/caffeines/filepile/constants/errors"
 	"github.com/caffeines/filepile/data"
 	"github.com/caffeines/filepile/lib"
+	"github.com/caffeines/filepile/middlewares"
 	"github.com/caffeines/filepile/models"
 	"github.com/caffeines/filepile/validators"
 	"github.com/labstack/echo/v4"
@@ -22,6 +23,7 @@ func RegisterAuthRoutes(endpoint *echo.Group) {
 	endpoint.POST("/register/", register)
 	endpoint.POST("/login/", login)
 	endpoint.PATCH("/refresh-token/", refreshToken)
+	endpoint.PATCH("/logout/", logout, middlewares.JWTAuth())
 }
 
 func login(ctx echo.Context) error {
@@ -133,7 +135,7 @@ func register(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 	resp.Title = "User registration successful"
-	resp.Status = http.StatusAccepted
+	resp.Status = http.StatusOK
 	resp.Data = user
 
 	return resp.ServerJSON(ctx)
@@ -183,6 +185,22 @@ func refreshToken(ctx echo.Context) error {
 		return resp.ServerJSON(ctx)
 	}
 	resp.Data = sess
-	resp.Status = http.StatusAccepted
+	resp.Status = http.StatusOK
+	return resp.ServerJSON(ctx)
+}
+
+func logout(ctx echo.Context) error {
+	resp := lib.Response{}
+	token, err := lib.ParseRefreshToken(ctx)
+	if err != nil {
+		resp.Title = "Invalid token data"
+		resp.Status = http.StatusBadRequest
+		resp.Code = errors.BearerTokenNotFound
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+	log.Println(token)
+	resp.Status = http.StatusOK
+	resp.Title = "Logout successful"
 	return resp.ServerJSON(ctx)
 }
