@@ -6,14 +6,13 @@ import (
 	"time"
 
 	"github.com/caffeines/filepile/app"
+	"github.com/caffeines/filepile/constants"
 	"github.com/caffeines/filepile/constants/errors"
 	"github.com/caffeines/filepile/data"
 	"github.com/caffeines/filepile/lib"
 	"github.com/caffeines/filepile/validators"
 	"github.com/labstack/echo/v4"
 )
-
-const SCOPE string = "user"
 
 // RegisterAuthRoutes registers authintacation routes
 func RegisterAuthRoutes(endpoint *echo.Group) {
@@ -57,7 +56,7 @@ func login(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
-	signedToken, err := lib.BuildJWTToken(user.Username, SCOPE, user.ID.Hex())
+	signedToken, err := lib.BuildJWTToken(user.Username, constants.USER_SCOPE, user.ID.Hex())
 	if err != nil {
 		log.Println(err)
 
@@ -67,11 +66,12 @@ func login(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
+
 	result := map[string]interface{}{
 		"access_token":  signedToken,
 		"refresh_token": lib.NewRefresToken(),
 		"expire_on":     time.Now().Add(time.Hour * 24 * 7).Unix(),
-		"permission":    SCOPE,
+		"permission":    constants.USER_SCOPE,
 	}
 	resp.Status = http.StatusOK
 	resp.Data = result
