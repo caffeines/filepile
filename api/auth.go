@@ -10,8 +10,10 @@ import (
 	"github.com/caffeines/filepile/constants/errors"
 	"github.com/caffeines/filepile/data"
 	"github.com/caffeines/filepile/lib"
+	"github.com/caffeines/filepile/models"
 	"github.com/caffeines/filepile/validators"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // RegisterAuthRoutes registers authintacation routes
@@ -66,11 +68,28 @@ func login(ctx echo.Context) error {
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
+	sess := &models.Session{
+		ID:           primitive.NewObjectID(),
+		UserID:       user.ID,
+		RefreshToken: lib.NewRefresToken(),
+		AccessToken:  signedToken,
+		CreatedAt:    time.Now().UTC(),
+		ExpiresOn:    time.Now().Add(time.Hour * 24 * 7).Unix(),
+	}
 
+	sessRepo := data.NewSessionRepo()
+	if err = sessRepo.CreateSession(db, sess); err != nil {
+		log.Println(err)
+		resp.Title = "User login failed"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
 	result := map[string]interface{}{
-		"access_token":  signedToken,
-		"refresh_token": lib.NewRefresToken(),
-		"expire_on":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"access_token":  sess.AccessToken,
+		"refresh_token": sess.RefreshToken,
+		"expire_on":     sess.ExpiresOn,
 		"permission":    constants.USER_SCOPE,
 	}
 	resp.Status = http.StatusOK
