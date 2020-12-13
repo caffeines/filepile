@@ -35,13 +35,35 @@ func NewRefresToken() string {
 	token := fmt.Sprintf("%d_%s", time.Now().Unix(), NewUUID())
 	return base64.StdEncoding.EncodeToString([]byte(token))
 }
+func extractTokenFromHeader(ctx echo.Context) string {
+	tokenWithBearer := ctx.Request().Header.Get("Authorization")
+	token := strings.Replace(tokenWithBearer, "Bearer", "", -1)
+	return strings.TrimSpace(token)
+}
 
-func ParseBearerToken(ctx echo.Context) (string, error) {
-	bearer := ctx.Request().Header.Get("Authorization")
-	bearerWithToken := strings.Split(bearer, " ")
-
-	if len(bearerWithToken) != 2 {
-		return "", NewError("Bearer token not found")
+func ExtractAndValidateToken(ctx echo.Context) (*Claims, *jwt.Token, error) {
+	token := extractTokenFromHeader(ctx)
+	if token == "" {
+		return nil, nil, NewError("Authorization token not found")
 	}
-	return bearerWithToken[1], nil
+	claims := Claims{}
+	jwtToken, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (i interface{}, err error) {
+		return []byte(config.GetJWT().Secret), nil
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	if !jwtToken.Valid {
+		return nil, nil, NewError("Token is invalid")
+	}
+	return &claims, jwtToken, nil
+}
+
+func ParseRefreshToken(ctx echo.Context) (string, error) {
+	refresh := ctx.Request().Header.Get("RefreshToken")
+	refreshWithToken := strings.Split(refresh, " ")
+	if len(refreshWithToken) != 2 {
+		return "", NewError("Refresh token not found")
+	}
+	return refreshWithToken[1], nil
 }

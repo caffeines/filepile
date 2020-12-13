@@ -141,7 +141,7 @@ func register(ctx echo.Context) error {
 
 func refreshToken(ctx echo.Context) error {
 	resp := lib.Response{}
-	token, err := lib.ParseBearerToken(ctx)
+	token, err := lib.ParseRefreshToken(ctx)
 	if err != nil {
 		resp.Title = "Token parsing failed"
 		resp.Errors = err
@@ -149,20 +149,37 @@ func refreshToken(ctx echo.Context) error {
 		resp.Code = errors.UserSignUpDataInvalid
 		return resp.ServerJSON(ctx)
 	}
-	log.Println(token)
 	db := app.GetDB()
 	sessionRepo := data.NewSessionRepo()
-	sess, err := sessionRepo.UpdateSession(db, token)
+	claims, _, err := lib.ExtractAndValidateToken(ctx)
+	if err != nil {
+		resp.Title = "Bearer token not found or expired"
+		resp.Status = http.StatusNotFound
+		resp.Code = errors.BearerTokenNotFound
+		resp.Errors = lib.NewError(err.Error())
+		return resp.ServerJSON(ctx)
+	}
+	accessToken, err := lib.BuildJWTToken(claims.Username, constants.USER_SCOPE, claims.UserID)
+	if err != nil {
+		resp.Title = "Failed to sign auth token"
+		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.TokenRefreshFailed
+		resp.Errors = err
+		return resp.ServerJSON(ctx)
+	}
+	sess, err := sessionRepo.UpdateSession(db, token, accessToken)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			resp.Title = "Refresh token not found"
+			resp.Title = "Refresh token not found or expired"
 			resp.Status = http.StatusNotFound
 			resp.Code = errors.RefreshTokenNotFound
 			resp.Errors = lib.NewError(err.Error())
 			return resp.ServerJSON(ctx)
 		}
-		// TODO: handle error
+		resp.Title = "Token refresh failed"
 		resp.Status = http.StatusInternalServerError
+		resp.Code = errors.DatabaseQueryFailed
+		resp.Errors = err
 		return resp.ServerJSON(ctx)
 	}
 	resp.Data = sess
