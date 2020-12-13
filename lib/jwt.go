@@ -3,10 +3,12 @@ package lib
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/caffeines/filepile/config"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo/v4"
 )
 
 type Claims struct {
@@ -32,4 +34,14 @@ func BuildJWTToken(username, scope, id string) (string, error) {
 func NewRefresToken() string {
 	token := fmt.Sprintf("%d_%s", time.Now().Unix(), NewUUID())
 	return base64.StdEncoding.EncodeToString([]byte(token))
+}
+
+func ParseBearerToken(ctx echo.Context) (string, error) {
+	bearer := ctx.Request().Header.Get("Authorization")
+	bearerWithToken := strings.Split(bearer, " ")
+
+	if len(bearerWithToken) != 2 {
+		return "", NewError("Bearer token not found")
+	}
+	return bearerWithToken[1], nil
 }

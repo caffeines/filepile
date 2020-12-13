@@ -13,7 +13,7 @@ type Session struct {
 	RefreshToken string             `bson:"refreshToken,omitempty" json:"refreshToken"`
 	AccessToken  string             `bson:"accesstoken,omitempty" json:"accesstoken"`
 	CreatedAt    time.Time          `bson:"createdAt,omitempty" json:"createdAt"`
-	ExpiresOn    int64              `bson:"expiresAt,omitempty" json:"expiresAt"`
+	ExpiresOn    int64              `bson:"expiresOn,omitempty" json:"expiresOn"`
 }
 
 // CollectionName returns name of the models

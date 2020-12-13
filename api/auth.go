@@ -14,12 +14,14 @@ import (
 	"github.com/caffeines/filepile/validators"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // RegisterAuthRoutes registers authintacation routes
 func RegisterAuthRoutes(endpoint *echo.Group) {
 	endpoint.POST("/register/", register)
 	endpoint.POST("/login/", login)
+	endpoint.PATCH("/refresh-token/", refreshToken)
 }
 
 func login(ctx echo.Context) error {
@@ -134,5 +136,36 @@ func register(ctx echo.Context) error {
 	resp.Status = http.StatusAccepted
 	resp.Data = user
 
+	return resp.ServerJSON(ctx)
+}
+
+func refreshToken(ctx echo.Context) error {
+	resp := lib.Response{}
+	token, err := lib.ParseBearerToken(ctx)
+	if err != nil {
+		resp.Title = "Token parsing failed"
+		resp.Errors = err
+		resp.Status = http.StatusUnprocessableEntity
+		resp.Code = errors.UserSignUpDataInvalid
+		return resp.ServerJSON(ctx)
+	}
+	log.Println(token)
+	db := app.GetDB()
+	sessionRepo := data.NewSessionRepo()
+	sess, err := sessionRepo.UpdateSession(db, token)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			resp.Title = "Refresh token not found"
+			resp.Status = http.StatusNotFound
+			resp.Code = errors.RefreshTokenNotFound
+			resp.Errors = lib.NewError(err.Error())
+			return resp.ServerJSON(ctx)
+		}
+		// TODO: handle error
+		resp.Status = http.StatusInternalServerError
+		return resp.ServerJSON(ctx)
+	}
+	resp.Data = sess
+	resp.Status = http.StatusAccepted
 	return resp.ServerJSON(ctx)
 }

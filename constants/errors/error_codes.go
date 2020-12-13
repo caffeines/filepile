@@ -7,6 +7,8 @@ const (
 	InvalidLoginData       ErrorCode = "400002"
 	InvalidLoginCredential ErrorCode = "401001"
 	UserNotFound           ErrorCode = "404001"
+	RefreshTokenNotFound   ErrorCode = "404002"
+	UserSignUpDataInvalid  ErrorCode = "422001"
 	DatabaseQueryFailed    ErrorCode = "500001"
 	BcryptProccessFaild    ErrorCode = "500002"
 	UserLoginFailed        ErrorCode = "500003"

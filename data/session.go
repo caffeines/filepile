@@ -7,4 +7,5 @@ import (
 
 type SessionRepository interface {
 	CreateSession(db *mongo.Database, sess *models.Session) error
+	UpdateSession(db *mongo.Database, token string) (*models.Session, error)
 }
