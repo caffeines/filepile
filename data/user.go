@@ -9,4 +9,5 @@ import (
 type UserRepository interface {
 	Register(db *mongo.Database, u *models.User) (*mongo.InsertOneResult, error)
 	FindUserByEmail(db *mongo.Database, email string) (*models.User, error)
+	FindUserByID(db *mongo.Database, id string) (*models.User, error)
 }

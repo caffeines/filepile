@@ -6,6 +6,7 @@ import (
 
 	"github.com/caffeines/filepile/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -41,6 +42,22 @@ func (usr *UserRepoImpl) FindUserByEmail(db *mongo.Database, email string) (*mod
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+//FindUserByID returns the matched document with id
+func (usr *UserRepoImpl) FindUserByID(db *mongo.Database, id string) (*models.User, error) {
+	user := models.User{}
+	userCollection := db.Collection(user.CollectionName())
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	userID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	if err := userCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil

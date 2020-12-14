@@ -50,7 +50,7 @@ func login(ctx echo.Context) error {
 			return resp.ServerJSON(ctx)
 		}
 		resp.Title = "User login failed"
-		resp.Status = http.StatusUnauthorized
+		resp.Status = http.StatusInternalServerError
 		resp.Code = errors.DatabaseQueryFailed
 		resp.Errors = err
 		return resp.ServerJSON(ctx)
