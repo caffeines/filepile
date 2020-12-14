@@ -10,6 +10,7 @@ import (
 	"github.com/caffeines/filepile/data"
 	"github.com/caffeines/filepile/lib"
 	"github.com/caffeines/filepile/middlewares"
+	"github.com/caffeines/filepile/service"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,8 +23,9 @@ func RegisterUserRoutes(endpoint *echo.Group) {
 
 func profile(ctx echo.Context) error {
 	resp := lib.Response{}
-	minioRepo := data.NewMinioRepo()
-	minioRepo.MakeBucket("userfiles")
+	minioCleint := app.GetMinioClient()
+	minioService := service.NewMinioService()
+	minioService.MakeBucket(minioCleint, "userfiles")
 	db := app.GetDB()
 	userRepo := data.NewUserRepo()
 
