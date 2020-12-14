@@ -48,16 +48,12 @@ func (usr *UserRepoImpl) FindUserByEmail(db *mongo.Database, email string) (*mod
 }
 
 //FindUserByID returns the matched document with id
-func (usr *UserRepoImpl) FindUserByID(db *mongo.Database, id string) (*models.User, error) {
+func (usr *UserRepoImpl) FindUserByID(db *mongo.Database, id primitive.ObjectID) (*models.User, error) {
 	user := models.User{}
 	userCollection := db.Collection(user.CollectionName())
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	userID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-	if err := userCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&user); err != nil {
+	if err := userCollection.FindOne(ctx, bson.M{"_id": id}).Decode(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil

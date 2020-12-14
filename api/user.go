@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/caffeines/filepile/lib"
 	"github.com/caffeines/filepile/middlewares"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,11 +22,11 @@ func RegisterUserRoutes(endpoint *echo.Group) {
 
 func profile(ctx echo.Context) error {
 	resp := lib.Response{}
-	userID := ctx.Get(constants.USER_ID)
-	uid := fmt.Sprintf("%s", userID)
 	db := app.GetDB()
 	userRepo := data.NewUserRepo()
-	user, err := userRepo.FindUserByID(db, uid)
+
+	userID := ctx.Get(constants.USER_ID).(primitive.ObjectID)
+	user, err := userRepo.FindUserByID(db, userID)
 	if err != nil {
 		log.Println(err)
 		if err == mongo.ErrNoDocuments {
