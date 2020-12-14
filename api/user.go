@@ -22,6 +22,8 @@ func RegisterUserRoutes(endpoint *echo.Group) {
 
 func profile(ctx echo.Context) error {
 	resp := lib.Response{}
+	minioRepo := data.NewMinioRepo()
+	minioRepo.MakeBucket("userfiles")
 	db := app.GetDB()
 	userRepo := data.NewUserRepo()
 

@@ -16,6 +16,10 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = app.SetMinioClient()
+	if err != nil {
+		panic(err)
+	}
 	lib.InitValidator()
 }
 
