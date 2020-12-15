@@ -46,4 +46,6 @@ func registerV1Routes() {
 	api.RegisterAuthRoutes(auth)
 	user := v1.Group("/user")
 	api.RegisterUserRoutes(user)
+	storage := v1.Group("/storage")
+	api.RegisterStorageRoutes(storage)
 }
