@@ -24,5 +24,8 @@ func InitializeIndex(db *mongo.Database) error {
 	if err := initUserIndex(db); err != nil {
 		return err
 	}
+	if err := initSessionIndex(db); err != nil {
+		return err
+	}
 	return nil
 }
