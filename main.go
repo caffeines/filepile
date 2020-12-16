@@ -4,6 +4,7 @@ import (
 	"github.com/caffeines/filepile/app"
 	"github.com/caffeines/filepile/config"
 	"github.com/caffeines/filepile/lib"
+	"github.com/caffeines/filepile/models"
 	"github.com/caffeines/filepile/server"
 )
 
@@ -21,6 +22,11 @@ func init() {
 		panic(err)
 	}
 	lib.InitValidator()
+	db := app.GetDB()
+	err = models.InitializeIndex(db)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {

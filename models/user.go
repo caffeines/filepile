@@ -3,7 +3,9 @@ package models
 import (
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // User model holds the user's data
@@ -23,4 +25,16 @@ type User struct {
 // CollectionName returns name of the models
 func (u User) CollectionName() string {
 	return "users"
+}
+
+func initUserIndex(db *mongo.Database) error {
+	user := User{}
+	userCol := db.Collection(user.CollectionName())
+	if err := createIndex(userCol, bson.M{"username": 1}, true); err != nil {
+		return err
+	}
+	if err := createIndex(userCol, bson.M{"email": 1}, true); err != nil {
+		return err
+	}
+	return nil
 }
