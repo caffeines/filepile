@@ -19,6 +19,7 @@ import (
 // RegisterStorageRoutes registers Bucketintacation routes
 func RegisterStorageRoutes(endpoint *echo.Group) {
 	endpoint.POST("/bucket/:name/", createBucket, middlewares.JWTAuth())
+	endpoint.GET("/my-bucket/", myBuckets, middlewares.JWTAuth())
 }
 
 func createBucket(ctx echo.Context) error {
@@ -59,5 +60,26 @@ func createBucket(ctx echo.Context) error {
 
 func addFile(ctx echo.Context) error {
 	resp := lib.Response{}
+	return resp.ServerJSON(ctx)
+}
+
+func myBuckets(ctx echo.Context) error {
+	resp := lib.Response{}
+	db := app.GetDB()
+	storageRepo := data.NewStorageRepo()
+	userID := ctx.Get(constants.USER_ID).(primitive.ObjectID)
+	lastID := ctx.QueryParam("lastId")
+	log.Println(lastID)
+	buckets, err := storageRepo.FindBucketsByCreatorID(db, userID, lastID)
+	if err != nil {
+		log.Println(err)
+		resp.Title = "Can not fetch folders"
+		resp.Status = http.StatusInternalServerError
+		resp.Errors = lib.NewError(err.Error())
+		resp.Code = errors.DatabaseQueryFailed
+		return resp.ServerJSON(ctx)
+	}
+	resp.Data = buckets
+	resp.Status = http.StatusOK
 	return resp.ServerJSON(ctx)
 }

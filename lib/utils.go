@@ -13,11 +13,12 @@ func IsDocumentNotFoundError(err error) bool {
 }
 
 func IsMongoDupKey(err error) bool {
-	wce, ok := err.(mongo.WriteConcernError)
+	wce, ok := err.(mongo.CommandError)
 	if !ok {
 		return false
 	}
-	return wce.Code == 11000 || wce.Code == 11001 || wce.Code == 12582 || wce.Code == 16460 && strings.Contains(wce.Message, " E11000 ")
+	isDup := strings.Contains(err.Error(), " E11000 ")
+	return wce.Code == 11000 || wce.Code == 11001 || wce.Code == 12582 || wce.Code == 16460 || isDup
 }
 
 // NewUUID return UUID/v4

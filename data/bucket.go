@@ -8,5 +8,5 @@ import (
 
 type StorageRepository interface {
 	CreateNewBucket(db *mongo.Database, bucket *models.Bucket) (bool, error)
-	FindBucketsByCreatorID(db *mongo.Database, creatorID primitive.ObjectID, lastID string) ([]models.Bucket, error)
+	FindBucketsByCreatorID(db *mongo.Database, creatorID primitive.ObjectID, lastID string) (*[]models.Bucket, error)
 }

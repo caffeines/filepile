@@ -49,25 +49,25 @@ func (s *StorageRepoImpl) CreateNewBucket(db *mongo.Database, bucket *models.Buc
 		}
 		return nil
 	})
+	if insertionError != nil {
+		isDup := lib.IsMongoDupKey(insertionError)
+		abortErr := session.AbortTransaction(context.Background())
+		if abortErr != nil {
+			return isDup, abortErr
+		}
+		return isDup, insertionError
+	}
 
 	minioClient := app.GetMinioClient()
 	minioService := service.NewMinioService()
-	isExists, bucketCreateErr := minioService.MakeBucket(minioClient, bucket.ID.String())
+	isExists, bucketCreateErr := minioService.MakeBucket(minioClient, bucket.ID.Hex())
 
-	if insertionError != nil || bucketCreateErr != nil || isExists {
-		var abortErr error
-		if lib.IsMongoDupKey(insertionError) || isExists {
-			abortErr = session.AbortTransaction(context.Background())
-			return true, abortErr
-		}
-		abortErr = session.AbortTransaction(context.Background())
+	if bucketCreateErr != nil || isExists {
+		abortErr := session.AbortTransaction(context.Background())
 		if abortErr != nil {
-			return false, abortErr
-		} else if bucketCreateErr != nil {
-			return false, bucketCreateErr
+			return isExists, abortErr
 		}
-		return false, insertionError
-
+		return isExists, bucketCreateErr
 	}
 	if err := session.CommitTransaction(context.Background()); err != nil {
 		return false, err
@@ -76,12 +76,12 @@ func (s *StorageRepoImpl) CreateNewBucket(db *mongo.Database, bucket *models.Buc
 }
 
 // FindBucketsByCreatorID returns folders by creator userId
-func (s *SessionRepoImpl) FindBucketsByCreatorID(db *mongo.Database, creatorID primitive.ObjectID, lastID string) ([]models.Bucket, error) {
+func (s *StorageRepoImpl) FindBucketsByCreatorID(db *mongo.Database, creatorID primitive.ObjectID, lastID string) (*[]models.Bucket, error) {
 	bucket := models.Bucket{}
 	bucketCollection := db.Collection(bucket.CollectionName())
 	opts := options.Find().SetSort(bson.M{"_id": 1}).SetLimit(10)
 	query := bson.M{"createdBy": creatorID}
-	if lastID == "" {
+	if lastID != "" {
 		id, err := primitive.ObjectIDFromHex(lastID)
 		if err != nil {
 			return nil, err
@@ -96,5 +96,5 @@ func (s *SessionRepoImpl) FindBucketsByCreatorID(db *mongo.Database, creatorID p
 	if err = cursor.All(context.Background(), &buckets); err != nil {
 		return nil, err
 	}
-	return buckets, nil
+	return &buckets, nil
 }
