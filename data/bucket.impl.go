@@ -7,6 +7,8 @@ import (
 	"github.com/caffeines/filepile/lib"
 	"github.com/caffeines/filepile/models"
 	"github.com/caffeines/filepile/service"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readconcern"
@@ -50,7 +52,7 @@ func (s *StorageRepoImpl) CreateNewBucket(db *mongo.Database, bucket *models.Buc
 
 	minioClient := app.GetMinioClient()
 	minioService := service.NewMinioService()
-	isExists, bucketCreateErr := minioService.MakeBucket(minioClient, bucket.Name)
+	isExists, bucketCreateErr := minioService.MakeBucket(minioClient, bucket.ID.String())
 
 	if insertionError != nil || bucketCreateErr != nil || isExists {
 		var abortErr error
@@ -71,4 +73,28 @@ func (s *StorageRepoImpl) CreateNewBucket(db *mongo.Database, bucket *models.Buc
 		return false, err
 	}
 	return false, nil
+}
+
+// FindBucketsByCreatorID returns folders by creator userId
+func (s *SessionRepoImpl) FindBucketsByCreatorID(db *mongo.Database, creatorID primitive.ObjectID, lastID string) ([]models.Bucket, error) {
+	bucket := models.Bucket{}
+	bucketCollection := db.Collection(bucket.CollectionName())
+	opts := options.Find().SetSort(bson.M{"_id": 1}).SetLimit(10)
+	query := bson.M{"createdBy": creatorID}
+	if lastID == "" {
+		id, err := primitive.ObjectIDFromHex(lastID)
+		if err != nil {
+			return nil, err
+		}
+		query = bson.M{"createdBy": creatorID, "_id": bson.M{"$gt": id}}
+	}
+	cursor, err := bucketCollection.Find(context.Background(), query, opts)
+	if err != nil {
+		return nil, err
+	}
+	var buckets []models.Bucket
+	if err = cursor.All(context.Background(), &buckets); err != nil {
+		return nil, err
+	}
+	return buckets, nil
 }
