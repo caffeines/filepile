@@ -26,9 +26,7 @@ func NewSessionRepo() SessionRepository {
 func (s *SessionRepoImpl) CreateSession(db *mongo.Database, sess *models.Session) error {
 	collectionName := sess.CollectionName()
 	sessionCollection := db.Collection(collectionName)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	_, err := sessionCollection.InsertOne(ctx, sess)
+	_, err := sessionCollection.InsertOne(context.Background(), sess)
 	return err
 }
 
@@ -49,9 +47,7 @@ func (s *SessionRepoImpl) UpdateSession(db *mongo.Database, token, accessToken s
 	}}}
 	collectionName := sess.CollectionName()
 	sessionCollection := db.Collection(collectionName)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	err := sessionCollection.FindOneAndUpdate(ctx, filter, update, &opt).Decode(sess)
-	defer cancel()
+	err := sessionCollection.FindOneAndUpdate(context.Background(), filter, update, &opt).Decode(sess)
 	return sess, err
 }
 
@@ -59,9 +55,7 @@ func (s *SessionRepoImpl) Logout(db *mongo.Database, token string) error {
 	sess := &models.Session{}
 	collectionName := sess.CollectionName()
 	sessionCollection := db.Collection(collectionName)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	filter := bson.D{{"refreshToken", token}}
-	err := sessionCollection.FindOneAndDelete(ctx, filter).Decode(&sess)
+	err := sessionCollection.FindOneAndDelete(context.Background(), filter).Decode(&sess)
 	return err
 }

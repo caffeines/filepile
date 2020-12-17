@@ -13,7 +13,7 @@ type Bucket struct {
 	ID        primitive.ObjectID   `bson:"_id,omitempty" json:"id"`
 	Name      string               `bson:"name,omitempty" json:"name"`
 	CreatedBy primitive.ObjectID   `bson:"createdBy,omitempty" json:"createdBy"`
-	Files     []primitive.ObjectID `bson:"files,omitempty" json:"files"`
+	Files     []primitive.ObjectID `bson:"files,omitempty" json:"files,omitempty"`
 	CreatedAt time.Time            `bson:"createdAt,omitempty" json:"createdAt"`
 	UpdateAt  time.Time            `bson:"updatedAt,omitempty" json:"updatedAt"`
 }
@@ -26,7 +26,7 @@ func (b *Bucket) CollectionName() string {
 func initBucketIndex(db *mongo.Database) error {
 	bucket := Bucket{}
 	bucketCol := db.Collection(bucket.CollectionName())
-	if err := createIndex(bucketCol, bson.M{"name": 1, "CreatedBy": 1}, true); err != nil {
+	if err := createIndex(bucketCol, bson.M{"name": 1, "createdBy": 1}, true); err != nil {
 		return err
 	}
 	return nil

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
 
 	"github.com/minio/minio-go/v7"
 )
@@ -24,11 +23,9 @@ func NewMinioService() MinioService {
 
 // MakeBucket create new bucket if not exists if exist return error and boolean
 func (m *MinioServiceImpl) MakeBucket(minioClient *minio.Client, bucketName string) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	err := minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
+	err := minioClient.MakeBucket(context.Background(), bucketName, minio.MakeBucketOptions{})
 	if err != nil {
-		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
+		exists, errBucketExists := minioClient.BucketExists(context.Background(), bucketName)
 		if errBucketExists == nil && exists {
 			return true, errors.New("bucketExist")
 		}
@@ -38,9 +35,7 @@ func (m *MinioServiceImpl) MakeBucket(minioClient *minio.Client, bucketName stri
 }
 
 func (m *MinioServiceImpl) UploadToMinio(mc *minio.Client, bucket, fileName, contentType string, reader io.Reader, size int64) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	info, err := mc.PutObject(ctx, bucket, fileName, reader, size, minio.PutObjectOptions{
+	info, err := mc.PutObject(context.Background(), bucket, fileName, reader, size, minio.PutObjectOptions{
 		ContentType:        contentType,
 		ContentDisposition: fmt.Sprintf("attachment; filename=\"%s\"", fileName),
 	})
@@ -52,9 +47,7 @@ func (m *MinioServiceImpl) UploadToMinio(mc *minio.Client, bucket, fileName, con
 }
 
 func (m *MinioServiceImpl) GetObjectFromMinio(mc *minio.Client, bucket, fileName string) (*minio.Object, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-	obj, err := mc.GetObject(ctx, bucket, fileName, minio.GetObjectOptions{})
+	obj, err := mc.GetObject(context.Background(), bucket, fileName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, err
 	}
