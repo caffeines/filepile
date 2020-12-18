@@ -5,6 +5,7 @@ type ErrorCode string
 const (
 	InvalidRegisterData       ErrorCode = "400001"
 	InvalidLoginData          ErrorCode = "400002"
+	InvalidMultiPartBody      ErrorCode = "400003"
 	InvalidLoginCredential    ErrorCode = "401001"
 	InvalidAuthorizationToken ErrorCode = "401002"
 	UserNotFound              ErrorCode = "404001"
