@@ -120,7 +120,7 @@ func uploadFile(ctx echo.Context) error {
 	if errU != nil {
 		resp.Title = "Minio service failed"
 		resp.Status = http.StatusInternalServerError
-		// resp.Code = errors.
+		resp.Code = errors.MinioServiceFailed
 		resp.Errors = errU
 		return resp.ServerJSON(ctx)
 	}

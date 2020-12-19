@@ -18,4 +18,5 @@ const (
 	UserLoginFailed           ErrorCode = "500003"
 	TokenRefreshFailed        ErrorCode = "500004"
 	SomethingWentWrong        ErrorCode = "500004"
+	MinioServiceFailed        ErrorCode = "500005"
 )
