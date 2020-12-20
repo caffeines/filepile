@@ -23,5 +23,6 @@ func LoadConfig() error {
 	LoadDB()
 	LoadServer()
 	LoadJWT()
+	LoadMinio()
 	return nil
 }

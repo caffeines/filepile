@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+  minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: "miniodev"
+      MINIO_SECRET_KEY: "miniodevPass"
+    command: ["server", "/data"]
+    volumes:
+      - "./storage/minio/:/data/"

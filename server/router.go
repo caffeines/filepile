@@ -44,4 +44,8 @@ func registerV1Routes() {
 	v1 := router.Group("/v1")
 	auth := v1.Group("/auth")
 	api.RegisterAuthRoutes(auth)
+	user := v1.Group("/user")
+	api.RegisterUserRoutes(user)
+	storage := v1.Group("/storage")
+	api.RegisterStorageRoutes(storage)
 }

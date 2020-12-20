@@ -2,10 +2,10 @@ package data
 
 import (
 	"context"
-	"time"
 
 	"github.com/caffeines/filepile/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -25,9 +25,7 @@ func NewUserRepo() UserRepository {
 // Register creates new user
 func (usr *UserRepoImpl) Register(db *mongo.Database, user *models.User) (*mongo.InsertOneResult, error) {
 	userCollection := db.Collection(user.CollectionName())
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	createdUser, err := userCollection.InsertOne(ctx, user)
+	createdUser, err := userCollection.InsertOne(context.Background(), user)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +36,17 @@ func (usr *UserRepoImpl) Register(db *mongo.Database, user *models.User) (*mongo
 func (usr *UserRepoImpl) FindUserByEmail(db *mongo.Database, email string) (*models.User, error) {
 	user := models.User{}
 	userCollection := db.Collection(user.CollectionName())
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := userCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
+	if err := userCollection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+//FindUserByID returns the matched document with id
+func (usr *UserRepoImpl) FindUserByID(db *mongo.Database, id primitive.ObjectID) (*models.User, error) {
+	user := models.User{}
+	userCollection := db.Collection(user.CollectionName())
+	if err := userCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user); err != nil {
 		return nil, err
 	}
 	return &user, nil
